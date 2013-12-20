@@ -1,10 +1,8 @@
-define( function( UserController ) {
-	'use strict'
+define( function( require ) {
+	'use strict';
 	var UserController = require( 'controllers/UserController' );
 	var App            = require( 'App' );
 	var Vent           = require( 'Vent' );
-
-
 	describe( 'Marionette - User', function() {
 		describe( 'Controller', function() {
 			it( 'should be an instance of User Controller', function() {
@@ -17,7 +15,7 @@ define( function( UserController ) {
 
 			} );
 
-			it( 'more tests to be placed' )
+			it( 'more tests to be placed' );
 		} );
 
 		describe( 'Skills View', function() {
@@ -42,5 +40,4 @@ define( function( UserController ) {
 
 		} );
 	} );
-
 } );

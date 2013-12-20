@@ -8,7 +8,8 @@ define( function( require ) {
 			'user/skills': 'showSkills',
 			'user/colleagues': 'showColleagues',
 			'user/profile': 'showProfile',
-			'user/:id': 'showProfile'
+			'user/:id': 'showProfile',
+			'user*action' : 'showProfile'
 		}
 	} );
 

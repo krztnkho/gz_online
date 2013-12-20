@@ -1,24 +1,26 @@
 'use strict';
 
 var mongoose = require( 'mongoose' );
-var uuid     = require( 'node-uuid' );
-var crypto   = require( 'crypto' );
-var check    = require( 'validator' ).check;
+var uuid = require( 'node-uuid' );
+var crypto = require( 'crypto' );
+var check = require( 'validator' ).check;
 var sanitize = require( 'validator' ).sanitize;
 var Schema = mongoose.Schema;
 
+
 var UserSchema = new mongoose.Schema( {
 	'email': {
-		'type'     : String,
-		'required' : true
+		'type': String,
+		'required': true
 	},
 	'username': {
-		'type'     : String
+		'type': String
 	},
 	'password': {
-		'type'     : String,
-		'required' : true
+		'type': String,
+		'required': true
 	},
+
 	'fName'            : String,
 	'lName'            : String,
 	'skills'           : Array,
@@ -26,6 +28,9 @@ var UserSchema = new mongoose.Schema( {
 	'verified'         : Number,
 	'salt'             : String,
 	'registrationDate' : Date
+	/*,'skills'           : [{
+		'type' : mongoose.Schema.Types.Mixed
+	}]*/
 } );
 
 // - Hashing passwords refer to this: http://davybrion.com/blog/2012/01/stop-storing-passwords-already/
@@ -45,7 +50,7 @@ UserSchema.methods.returnPassword = function( passwordPlain ) {
 	return hash( passwordPlain, this.salt );
 };
 
-UserSchema.methods.isValidPassword = function( passwordPlain  ) {
+UserSchema.methods.isValidPassword = function( passwordPlain ) {
 	return this.password === hash( passwordPlain, this.salt );
 };
 
@@ -70,7 +75,6 @@ UserSchema.pre( 'save', function( next ) {
 		next( new Error( 'Invalid email account.' ) );
 	}
 
-	// Set email user field as temporary username
 	if ( !this.username ) {
 		this.username = emailArray[ 0 ];
 	}

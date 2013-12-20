@@ -1,10 +1,10 @@
 define( function( require ) {
 	'use strict';
 
-	var Backbone = require( 'backbone' );
+	var Backbone   = require( 'backbone' );
 	var validation = require( 'backbone.validation' );
-	var _ = require( 'underscore' );
-
+	var _          = require( 'underscore' );
+	var util	= require('util');
 	_.extend( Backbone.Model.prototype, validation.mixin );
 	_.extend( validation.patterns, {
 		email: /[a-zA-Z0-9]+\.[a-zA-Z0-9]+@globalzeal\.net/, // Accepts only globalzeal emails,
@@ -41,7 +41,8 @@ define( function( require ) {
 			} else {
 				return '/users/' + this.id;
 			}
-		}
+		},
+		'baucis' : util.baucisFetch
 
 	} );
 } );

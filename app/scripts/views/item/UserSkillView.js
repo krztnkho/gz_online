@@ -1,9 +1,10 @@
 define( function( require ) {
 	'use strict';
 
-	var _ = require( 'underscore' );
+
+	var _          = require( 'underscore' );
 	var Marionette = require( 'marionette' );
-	var template = require( 'text!tmpl/item/userSkillView.html' );
+	var template   = require( 'text!tmpl/item/userSkillView.html' );
 
 	// Return a ItemView class definition
 	return Marionette.ItemView.extend( {
@@ -21,6 +22,8 @@ define( function( require ) {
 		},
 
 		template: _.template( template ),
+
+		className: 'ul',
 
 		// ui selector cache
 		ui: {},

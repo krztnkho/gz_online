@@ -1,9 +1,9 @@
 define( function( require ) {
 	'use strict';
 
-	var UserModel = require( 'models/UserModel' );
+	var UserModel    = require( 'models/UserModel' );
 	var LocalStorage = require( 'backbone.localStorage' );
-	var _ = require( 'underscore' );
+	var _            = require( 'underscore' );
 	var User;
 
 	describe( 'UserModel', function() {

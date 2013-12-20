@@ -5,6 +5,7 @@ define( function( require ) {
 	var Marionette = require( 'marionette' );
 	var template = require( 'text!tmpl/layout/userLayout.html' );
 
+
 	// Return a Layout class definition
 	return Marionette.Layout.extend( {
 

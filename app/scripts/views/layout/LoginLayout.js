@@ -1,40 +1,41 @@
 define( function( require ) {
 	'use strict';
 
-	var _          = require( 'underscore' );
-	var Backbone   = require( 'backbone' );
+	var _ = require( 'underscore' );
+	var Backbone = require( 'backbone' );
 	var Marionette = require( 'marionette' );
-	var Vent       = require( 'Vent' );
-	var UserModel  = require( 'models/UserModel' );
-	var Session    = require( 'models/SessionModel' );
+	var Vent = require( 'Vent' );
+	var UserModel = require( 'models/UserModel' );
+	var Session = require( 'models/SessionModel' );
+	var Reqres  = require( 'RequestResponse' );
 
-	var ErrorView       = require( 'views/ErrorView' );
+	var ErrorView = require( 'views/ErrorView' );
 	var LoginLayoutTmpl = require( 'text!tmpl/views/layout/LoginLayout_tmpl.html' );
 
 	/* Return a ItemView class definition */
 	return Marionette.Layout.extend( {
 
-		'initialize' : function() {},
+		'initialize': function() {},
 
-		'template' : _.template( LoginLayoutTmpl ),
+		'template': _.template( LoginLayoutTmpl ),
 
-		'regions' : {
-			'loginError' : '#login-error',
+		'regions': {
+			'loginError:': '#login-error',
 		},
 
 		/* ui selector cache */
-		'ui' : {
-			'email'    : '#input-email',
-			'password' : '#input-password',
+		'ui': {
+			'email': '#input-email',
+			'password': '#input-password',
 		},
 
 		/* Ui events hash */
-		'events' : {
-			'submit' : 'login'
+		'events': {
+			'submit': 'login'
 		},
 
-		'login' : function( event ) {
-
+		'login': function( event ) {
+			var self = this;
 			this.regionManager.each( function( region ) {
 				region.close();
 			} );
@@ -46,14 +47,23 @@ define( function( require ) {
 				'email'    : email,
 				'password' : password,
 				'success'  : function( resp ) {
-					console.log( resp );
+					//Backbone.history.navigate('#user');
 				},
-				'error'    : function( xhr, status, error ) {
+				'error': function( xhr, status, error ) {
 					console.log( error );
 				}
 			} );
 
+
+					if(!Reqres.request('sessionAuthenticated')){
+							Backbone.history.navigate('#user', true);
+					}else{
+						console.log('Chaka doll');
+					}
+
+
 			return false;
 		}
 	} );
+
 } );

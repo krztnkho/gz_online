@@ -23,7 +23,7 @@ define( function( require ) {
 	return Marionette.Controller.extend( {
 
 		initialize: function( options ) {
-			this.App = this.options.App;
+			this.App  = this.options.App;
 			this.Vent = this.options.Vent;
 			_.bindAll( this );
 
@@ -45,10 +45,17 @@ define( function( require ) {
 				} );
 			} else {
 				this.App.router.navigate( 'signup' );
+
 			}
 			this._setMenu();
 		},
-
+		/*
+		showLogin : function( event ) {
+			var loginLayout = new views.LoginLayout();
+			this.App.content.show( loginLayout );
+			this._setMenu();
+		},
+*/
 		showSignup: function( event ) {
 			var signupLayout = new views.SignupLayout();
 			var content = this.App.content;
@@ -84,7 +91,6 @@ define( function( require ) {
 				} );
 			}
 		},
-
 		_setMenu: function() {
 			this.App.menu.show( new views.NavLayout() );
 		}

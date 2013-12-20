@@ -3,10 +3,10 @@ define( function ( require ) {
 
 	var _          = require( 'underscore' );
 	var Marionette = require( 'marionette' );
-	var template   = require( 'text!tmpl/item/userMenuView.html' );
+	var template   = require( 'text!tmpl/composite/userProfileContentsView.html' );
 
-	// Return a ItemView class definition
-	return Marionette.ItemView.extend( {
+	// Return a CompositeView class definition
+	return Marionette.CompositeView.extend( {
 
 		initialize : function ( options ) {
 			var self = this;
@@ -16,7 +16,7 @@ define( function ( require ) {
 			_.each( options, function ( value, key ) {
 				self[ key ] = value;
 			} );
-			this.listenTo(this.model, 'change', this.render );
+
 			return this;
 		},
 
@@ -25,16 +25,18 @@ define( function ( require ) {
 		className : 'panel panel-primary',
 
 		// ui selector cache
-		ui : {
-			'menuOptions' : 'li a'
-		},
+		ui : {},
+
+		// where are we appending the items views
+
+		//tagName: "td",
+		itemViewContainer : '#accordion',
 
 		// Ui events hash
 		events : {},
 
 		// on render callback
-		onRender : function() {
-		},
+		onRender : function () {}
 
 	} );
 

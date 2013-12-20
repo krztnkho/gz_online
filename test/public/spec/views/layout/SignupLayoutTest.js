@@ -2,9 +2,9 @@ define( function( require ) {
 	'use strict';
 
 	var SignupLayout = require( 'views/layout/SignupLayout' );
-	var Marionette = require( 'marionette' );
-	var Backbone = require( 'backbone' );
-	var Vent = require( 'Vent' );
+	var Marionette   = require( 'marionette' );
+	var Backbone     = require( 'backbone' );
+	var Vent         = require( 'Vent' );
 
 	describe( 'SignupLayout', function() {
 		var view;
@@ -24,7 +24,7 @@ define( function( require ) {
 		} );
 
 		it( 'should show spinner when event triggered', function ( done ) {
-				
+
 			view.on( 'ajaxSpinner', function( opts ) {
 				view.$el.find( '.spinner' ).should.have.length( 1 );
 				done();

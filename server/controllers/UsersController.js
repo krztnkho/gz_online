@@ -22,7 +22,7 @@ module.exports = function( baucis ) {
 	controller.query( 'collection', 'get', function( request, response, next ) {
 		var query = request.baucis.query;
 		// Show only the following fields
-		query.select( 'email username fName lName role verified' );
+		query.select( 'email username fName lName role verified skills' );
 		next();
 	} );
 

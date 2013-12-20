@@ -6,7 +6,7 @@ var should = require( 'chai' ).should();
 
 
 describe( 'REST - Skills', function() {
-	var baseUrl = "/skills";
+	var baseUrl = '/skills';
 
 	before( function( done ) {
 
@@ -25,13 +25,9 @@ describe( 'REST - Skills', function() {
 
 	} );
 
-	//-----------------------GET--------------------------------
-
-
 	describe( 'GET', function() {
 		var error, response, body;
 
-		//baucis
 		describe( 'get all skills', function() {
 			before( function( done ) {
 				request
@@ -61,31 +57,29 @@ describe( 'REST - Skills', function() {
 		} );
 
 
-		//baucis
+
 		describe( 'get skill by id', function() {
-			//test data id
+
 			var skill = {
-				'name': "HTML",
-				'description': "Hypertext Markup Language",
-				'parent': null
+				'name': 'HTML',
+				'description': 'Hypertext Markup Language'
 			};
 
 			before( function( done ) {
 				request
-					.post( baseUrl + "/addSkill" )
+					.post( baseUrl )
 					.send( skill )
 					.end( function( err, res ) {
-						//console.log( res );
 						var id = res.body._id;
 						request
-							.get( baseUrl + "/" + id )
+							.get( baseUrl + '/' + id )
 							.end( function( err, res ) {
 								error = err;
 								response = res;
 								body = response.body;
 								done();
 							} );
-						//done();
+
 					} );
 
 			} );
@@ -121,21 +115,14 @@ describe( 'REST - Skills', function() {
 
 	} );
 
-	//-----------------------POST
 
 	describe( 'POST', function() {
-		//OK adding :D
-		//add skill that updates parent's field child
 		describe( 'adding a new skill', function() {
-			// code
-			var skillUrl = baseUrl + '/addSkill';
-			//test data
+			var skillUrl = baseUrl;
 			var skill = {
-				name: 'BackBone',
-				description: '..bb..',
-				parent: null
+				name: 'BackBone2',
+				description: '..bb..'
 			};
-			//end test data
 			var error;
 			var response;
 			var body;
@@ -148,7 +135,6 @@ describe( 'REST - Skills', function() {
 						error = err;
 						response = res;
 						body = response.body;
-						//console.log( "ERROR: "+err );
 						done();
 					} );
 			} );
@@ -170,17 +156,12 @@ describe( 'REST - Skills', function() {
 	} );
 
 
-	//-----------------------PUT
 	describe( 'PUT', function() {
-
-		//test data
-
 
 		var error;
 		var response;
 		var body;
 
-		//baucis
 		describe( 'update skill by id', function() {
 
 			before( function( done ) {
@@ -191,12 +172,12 @@ describe( 'REST - Skills', function() {
 						error = err;
 						response = res;
 						body = response.body;
-						var id = body[ 0 ]._id; //get first data id to update
+						var id = body[ 0 ]._id;
 
 						request
-							.put( baseUrl + "/" + id )
+							.put( baseUrl + '/' + id )
 							.send( {
-								"openStatus": 1
+								'openStatus': 1
 							} )
 							.end( function( err, res ) {
 								error = err;
@@ -213,22 +194,19 @@ describe( 'REST - Skills', function() {
 				response.statusCode.should.equal( 200 );
 			} );
 
-			it( 'should be json', function(){
+			it( 'should be json', function() {
 				response.should.be.json;
-			})
+			} );
 
 		} );
 
 	} );
 
 
-	//-----------------------DELETE
+
 	describe( 'DELETE', function() {
 
 
-		/*var skill={
-			name: "<name of skill>"
-			};*/
 		var error;
 		var response;
 		var body;
@@ -243,16 +221,15 @@ describe( 'REST - Skills', function() {
 						error = err;
 						response = res;
 						body = response.body;
-						var id = body[ 0 ]._id; //get first data id to delete
+						var id = body[ 0 ]._id;
 						request
-							.del( baseUrl + "/deleteSkill/" + id )
-						//.send(skill)
-						.end( function( err, res ) {
-							error = err;
-							response = res;
-							body = response.body;
-							done();
-						} );
+							.del( baseUrl + '/' + id )
+							.end( function( err, res ) {
+								error = err;
+								response = res;
+								body = response.body;
+								done();
+							} );
 					} );
 			} );
 
@@ -261,47 +238,13 @@ describe( 'REST - Skills', function() {
 			} );
 
 
-			it( 'should be json', function() {
+			it( 'should be JSON', function() {
 				response.should.be.json;
 			} );
+
+
 
 		} );
-
-
-
-		/* baucis delete
-		//testdata
-		var id = "529ec29fd1f5d57e13000001";
-		var error, response, body;
-		//delete skill
-		//delete skill's child, and delete from parent
-
-		//baucis
-		describe( 'delete skill by id', function() {
-
-			before( function( done ) {
-				request
-					.del( baseUrl + "/" + id )
-					.end( function( err, res ) {
-						error = err;
-						response = res;
-						body = response.body;
-						done();
-					} );
-			} );
-
-			it( 'GET should return 200', function() {
-				response.statusCode.should.equal( 200 );
-			} );
-
-			it( 'should be json', function() {
-				response.should.be.json;
-			} );
-
-
-
-		} );*/
-
 
 
 	} );

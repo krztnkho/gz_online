@@ -35,7 +35,6 @@
 			'shim'                     : 'bower_components/shim', // *! utility for object prototypes
 			'spinjs'                   : 'bower_components/spinjs/spin',
 			'MiddlewareRouter'         : 'scripts/MiddlewareRouter',
-			'util'					   : 'scripts/util',
 			'bootbox'				   : 'bower_components/bootbox/bootbox',
 
 			// root folders
@@ -44,6 +43,7 @@
 			'views'                    : 'scripts/views',
 			'controllers'			   : 'scripts/controllers',
 			'routers'                  : 'scripts/routers',
+			'util'					   : 'scripts/util',
 			'tmpl'                     : 'templates',
 
 			// Base application level classes

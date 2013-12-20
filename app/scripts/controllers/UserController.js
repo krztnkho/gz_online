@@ -5,32 +5,43 @@ define( function( require ) {
 	var $ = require( 'jquery' );
 	var Backbone = require( 'backbone' );
 	var Marionette = require( 'marionette' );
-
+	var async = require( 'async' );
+	var Session = require('models/SessionModel');
 	// require models
 	var models = {
-		User: require( 'models/UserModel' )
+		'User': require( 'models/UserModel' )
+		// 'Session': require('models/SessionModel')
 	};
 
 	// require collections
 	var collections = {
-		Users: require( 'collections/UsersCollection' )
+		'Users': require( 'collections/UsersCollection' ),
+		'UserSkillTreeNodeCollection': require( 'collections/UserSkillTreeNodeCollection' ),
+		'SkillsCollection': require( 'collections/SkillsCollection' )
 	};
 
 	// require layouts
 	var layouts = {
-		User: require( 'views/layout/UserLayout' )
+		'User': require( 'views/layout/UserLayout' )
 	};
 
 	// require views
 	var views = {
-		UserMenuView: require( 'views/item/UserMenuView' ),
-		UserSkillView: require( 'views/item/UserSkillView' ),
+		//UserMenuView: require( 'views/item/UserMenuView' ),
+		//UserSkillView: require( 'views/item/UserSkillView' ),
 		UserContentsView: require( 'views/composite/UserContentsView' ),
-		UserColleaguesView: require( 'views/item/UserColleaguesView' )
-	};
+		UserColleaguesView: require( 'views/item/UserColleaguesView' ),
 
+		'UserMenuView': require( 'views/item/UserMenuView' ),
+		'UserSkillContentsView': require( 'views/composite/UserSkillContentsView' ),
+		'UserSkillTreeView': require( 'views/composite/UserSkillTreeView' ),
+		'UserSkillTreeRoot': require( 'views/collection/UserSkillTreeRoot' ),
+		//for user profile delete lang ni inig abot kang francis
+		'UserProfileContentsView': require( 'views/composite/UserProfileContentsView' ),
+		'UserProfileView': require( 'views/item/UserProfileView' )
+	};
 	var globalVars = {
-		_id: '52aaba1a4a451895ea2b6da1',
+		_id: '52b1481732ff9dc511000001',
 		_users: null
 	};
 	return Marionette.Controller.extend( {
@@ -52,34 +63,99 @@ define( function( require ) {
 			this.layout = this._getLayout();
 			this.App.content.show( this.layout );
 		},
-
-		showProfile: function( id ) {
-			var User = new models.User( {
-				selectedMenu: 'Profile',
-				_id: id
+		_getUserSkills: function( id, next ) {
+			var User = new models.User();
+			var result;
+			User.baucis( {
+				'conditions': {
+					'_id': id
+				}
+			} ).then( function( response ) {
+				if ( response[ 0 ] !== undefined && response[ 0 ].skills ) {
+					result = ( response[ 0 ].skills );
+				} else {
+					result = [];
+				}
+				next( result );
 			} );
 
-			User.fetch( {
-				success: function( model, response, options ) {
-					console.log( response );
+		},
+		_getAdminSkillTemplate: function( skills, next ) {
+			var self = this;
+			var SkillsCollection = new collections.SkillsCollection();
+			var skillTreeTemplate;
+			SkillsCollection.baucis().then( function( collection, response ) {
+				if ( response === 'success' ) {
+					skillTreeTemplate = self._buildJSONSkillTree( null, collection, [], skills );
+				} else {
+					skillTreeTemplate = [];
 				}
+				next( skillTreeTemplate );
 			} );
 		},
-
+		_countUserSkills: function( id, next ) {
+			var User = new models.User();
+			User.baucis( {
+				'conditions': {
+					'_id': id
+				}
+			} ).then( function( response ) {
+				var count = response[ 0 ].skills.length || 0;
+				next(count);
+			} );
+		},
 		showSkills: function() {
 			this._setActiveMenu();
+			var self = this;
+		var id = Session.get('_id');
 
-			var User = new models.User( {
-				selectedMenu: 'Skills'
+			async.waterfall( [
+				//TODO: get the id of user later
+				//this is the userSkills send userID sample: '52b01616938423a614000008'
+				function( callback ) {
+					// Code
+					self._getUserSkills( id, function( skills ) {
+						callback( null, skills );
+					} );
+				},
+				//this is the skilltreetemplate (template of all the skills)
+				function( skills, callback ) {
+					// Code
+					self._getAdminSkillTemplate( skills, function( treeTemplate ) {
+						var results = [];
+						results[ 0 ] = treeTemplate;
+						if ( treeTemplate.length === 0 ) {
+
+							results[ 1 ] = '<br/>&nbsp;<span class="glyphicon glyphicon-wrench"></span>&nbsp;&nbsp;No skill tree available yet.';
+						}
+						callback( null, results );
+					} );
+
+				}
+
+
+			], function( error, output ) {
+				// Code
+				//TODO : compare skillTreeTemplate vs userSkill and change status to a method
+
+				var User = new models.User( {
+					selectedMenu: 'Skills',
+					msg: output[ 1 ]
+				} );
+				var skillTree = new collections.UserSkillTreeNodeCollection( output[ 0 ] );
+				var skillTreeView = new views.UserSkillTreeRoot( {
+					collection: skillTree
+				} );
+
+				var view = new views.UserSkillContentsView( {
+					model: User,
+					collection: skillTree,
+					itemView: views.UserSkillTreeView
+				} );
+
+				self.layout.contentRegion.show( view );
 			} );
 
-			var view = new views.UserContentsView( {
-				model: User,
-				collection: new collections.Users(),
-				itemView: views.UserSkillView
-			} );
-
-			this.layout.contentRegion.show( view );
 		},
 
 		showColleagues: function() {
@@ -93,6 +169,8 @@ define( function( require ) {
 			} );
 
 			var self = this;
+			var id = Session.get('_id');
+
 			var users = [];
 			User.fetch( {
 				'success': function( model, response, options ) {
@@ -101,11 +179,10 @@ define( function( require ) {
 					}
 
 					users = _.without( users, _.findWhere( users, {
-						'_id': globalVars._id
+						'_id': id
 					} ) );
 
 					_.each( users, function( u ) {
-						//console.log( u );
 						if ( u && u.registrationDate ) {
 							u.registrationDate = new Date( Date.parse( u.registrationDate ) );
 						}
@@ -138,23 +215,80 @@ define( function( require ) {
 
 		_showMenuAndContent: function() {
 			this._addMenu( this.layout.menuRegion );
+			this._updateMenuBadgeCount();
 
-			//this.showUsers( this.layout.contentRegion, 'Users' );
 		},
-
 		_addMenu: function() {
-			var User = new models.User( {
-				colleaguesCtr: 3,
-				skillsCtr: 3
+			var self = this;
+
+
+			//TODO: get ID from session
+			self.menuModel = new models.User( {
+				'colleaguesCtr': 0,
+				'skillsCtr': 0
 			} );
 
-			this.menu = new views.UserMenuView( {
-				model: User
+			self.menu = new views.UserMenuView( {
+				model: self.menuModel
 			} );
 
-			this.layout.menuRegion.show( this.menu );
+			self.layout.menuRegion.show( self.menu );
 		},
+		_getUserInfo: function( id, next ) {
+			var User = new models.User();
+			User.baucis( {
+				'conditions': {
+					'_id': id
+				}
+			} ).then( function( userinfo ) {
 
+				var res = userinfo[ 0 ] || {
+					fName: 'test',
+					lName: 'test'
+				};
+				next( res );
+
+			} );
+		},
+		showProfile: function() {
+			this._setActiveMenu();
+			var self = this;
+			//TODO: get session id for globals.testId
+
+
+			var id = Session.get('_id');
+			async.waterfall( [
+
+				function( callback ) {
+					self._getUserInfo( Session.get('_id'), function( userdata ) {
+						var User = new models.User( {
+							'selectedMenu': 'Profile Information',
+							'fName': userdata.fName,
+							'lName': userdata.lName
+
+						} );
+						callback( null, User );
+					} );
+
+				},
+				function( User, callback ) {
+					self._getUserSkills( Session.get('_id'), function( skills ) {
+						callback( null, User, skills );
+					} );
+				},
+				function( User, userInfo, callback ) {
+					var view = new views.UserProfileContentsView( {
+						model: User,
+						collection: new collections.Users( userInfo ),
+						itemView: views.UserProfileView
+					} );
+					callback( null, view );
+				}
+
+			], function( err, view ) {
+				self.layout.contentRegion.show( view );
+			} );
+		},
 		_setActiveMenu: function() {
 			var currentRoute = '#' + Backbone.history.fragment;
 			var menuOptions = this.menu.ui.menuOptions;
@@ -174,6 +308,44 @@ define( function( require ) {
 			if ( $.inArray( currentRoute, hashes ) === -1 ) {
 				$( menuOptions[ 0 ] ).parent().addClass( 'active' );
 			}
+
+		},
+		_buildJSONSkillTree: function( parentId, skillCollection, skillTree, skills ) {
+			_.each( skillCollection, function( element, index, list ) {
+				_.each( skills, function( skill ) {
+					if ( element.name === skill.name ) {
+						element.openStatus = skill.openStatus;
+					}
+				} );
+				if ( element.parent === null ) {
+					skillTree.push( element );
+				} else {
+					var parent = _.findWhere( list, {
+						_id: element.parent
+					} );
+
+					if ( !parent.children ) {
+						_.extend( parent, {
+							children: []
+						} );
+					}
+
+					parent.children.push( element );
+				}
+			} );
+			skillTree = JSON.parse( JSON.stringify( skillTree ) );
+			return skillTree;
+		},
+		_updateMenuBadgeCount: function() {
+			var self = this;
+				var id = Session.get('_id');
+
+			//this.menuModel
+			self._countUserSkills( id, function( count ) {
+				self.menuModel.set( {
+					'skillsCtr': count
+				} );
+			} );
 		}
 	} );
 } );

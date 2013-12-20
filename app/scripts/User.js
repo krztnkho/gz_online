@@ -5,11 +5,11 @@ define( function( require ) {
 
 	// Libs
 
-	var Backbone = require( 'backbone' );
+	var Backbone   = require( 'backbone' );
 	var Marionette = require( 'marionette' );
 
 	// Project scripts
-	var Router = require( 'routers/UserRouter' );
+	var Router     = require( 'routers/UserRouter' );
 	var Controller = require( 'controllers/UserController' );
 
 	// App instantiation

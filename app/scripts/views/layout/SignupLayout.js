@@ -86,7 +86,7 @@ define( function( require ) {
 				}, {
 					'validate': true
 				} );
-				
+
 				user.on( 'validated:valid', function() {
 					self.trigger( 'ajaxSpinner', {
 						'spin': true
